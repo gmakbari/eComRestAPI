@@ -1,6 +1,8 @@
 <?php
 
 namespace Database\Seeders;
+use App\Models\User;
+use App\Models\Products;
 
 use Illuminate\Database\Seeder;
 
@@ -13,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // User::factory(10)->create();
+        User::factory(5)->create();
+        Products::factory(20)->create();
     }
 }
