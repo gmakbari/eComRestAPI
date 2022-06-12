@@ -1,9 +1,9 @@
-# Restful API for e-Commerce
+# Restful API for e-Commerce (Product list)
 
-###### The Restful API developed in PHP Framework Laravel 8.0 and it just providing all products from database and return as JSON format for client.
+###### The Restful API developed in PHP Framework Laravel 8.0 and it just provides all products and view the details of one product from database and return as JSON format for client.
 ###### Two APIs, list of procducts and reading one product by id.
 
-## Get all products
+## Get all products API route
 ```
 Route::apiResource("products/",ProductsController::class);
 ```
@@ -81,7 +81,7 @@ class ProductCollection extends ResourceCollection
 }
 ```
 
-## Details of one product
+## Details of one product API route
 ```
 Route::apiResource("products/10",ProductsController::class); //return the details of product number 10
 ```
@@ -97,4 +97,113 @@ Route::apiResource("products/10",ProductsController::class); //return the detail
     }
 }
 ```
+
+## JsonResource to transform the resource into an array for returning the custom attributes.
+```
+namespace App\Http\Resources\Products;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ProductResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
+    public function toArray($request)
+    {
+        return [
+                "name" => $this->name,
+                "price" => $this->price,
+                "stock" => $this->stock,
+                "discount" => $this->discount,
+                "description" => $this->description
+        ];
+    }
+}
+```
+
+## API Controller
+```
+namespace App\Http\Controllers;
+
+use App\Models\Products;
+use App\Http\Requests\StoreProductsRequest;
+use App\Http\Requests\UpdateProductsRequest;
+use App\Http\Resources\Products\ProductResource;
+
+class ProductsController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        try
+        {
+            return Products::all();
+        }
+        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $exception)
+        {
+            return response()->json(['error' => "No record found!"]);
+        }
+
+    }
+    
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Products  $products
+     * @return \Illuminate\Http\Response
+     */
+    public function show($product)
+    {
+
+        try
+        {
+            return new ProductResource(Products::findOrFail($product));
+        }
+        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $exception)
+        {
+
+            return response()->json(['error' => "No record found!"]);
+        }
+
+        
+    }
+}
+```
 # PHPUnit used for testing 
+## Different testing like (Unit,Feature) and there is used to test by Unit test in with Laravel PHPUnit just simple for API call via HTTP if not the routes exist.
+```
+namespace Tests\Unit;
+
+use Tests\TestCase;
+
+class ProductTest extends TestCase
+{
+    
+    public function test_index()
+    {
+        $response = $this->get('/api/products');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_show_product()
+    {
+    	
+    	$this->get("/api/products/1")
+    	->assertStatus(200);
+    }
+
+}
+```
+
+## RESTful API
+
+![This is an image](https://github.com/gmakbari/eComRestAPI/blob/master/public/diagram.png)
