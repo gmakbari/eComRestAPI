@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProductsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,4 +19,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 //creating API route for products: Resource
-Route::apiResource("/products","App\Http\Controllers\ProductsController");
+
+Route::group(["prefix"=>"products"],function(){
+	Route::apiResource("/",ProductsController::class);
+	Route::get("/{id}",[ProductsController::class, "show"]);
+});
+
+
+
+

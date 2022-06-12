@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Products;
 use App\Http\Requests\StoreProductsRequest;
 use App\Http\Requests\UpdateProductsRequest;
+use App\Http\Resources\Products\ProductResource;
 
 class ProductsController extends Controller
 {
@@ -15,7 +16,15 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        //
+        try
+        {
+            return Products::all();
+        }
+        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $exception)
+        {
+            return response()->json(['error' => "No record found!"]);
+        }
+
     }
 
     /**
@@ -45,9 +54,20 @@ class ProductsController extends Controller
      * @param  \App\Models\Products  $products
      * @return \Illuminate\Http\Response
      */
-    public function show(Products $products)
+    public function show($product)
     {
-        //
+
+        try
+        {
+            return new ProductResource(Products::findOrFail($product));
+        }
+        catch(\Illuminate\Database\Eloquent\ModelNotFoundException $exception)
+        {
+
+            return response()->json(['error' => "No record found!"]);
+        }
+
+        
     }
 
     /**

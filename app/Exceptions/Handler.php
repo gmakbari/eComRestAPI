@@ -32,6 +32,20 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        //
+            $this->renderable(function (InvalidOrderException $e, $request) {
+                return response()->view('errors.invalid-order', [], 500);
+            });
     }
+
+    // public function render($request, Exception $e)
+    // {
+    //     $error =$e->getMessage();
+
+    //     //do your stuff with the error message 
+
+    //     return parent::render($request, $exception);
+    // }
+
+
+    
 }
